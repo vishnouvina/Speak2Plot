@@ -1,14 +1,7 @@
-#################################################################################
-# Chat2VIS 
-# https://chat2vis.streamlit.app/
-# Paula Maddigan
-#################################################################################
-
 import pandas as pd
-import openai
 import streamlit as st
-#import streamlit_nested_layout
-from classes import get_primer,format_question,run_request
+
+from classes import get_primer, format_question, run_request
 import warnings
 warnings.filterwarnings("ignore")
 st.set_option('deprecation.showPyplotGlobalUse', False)
@@ -16,23 +9,25 @@ st.set_page_config(layout="wide",page_title="Chat2VIS")
 
 st.markdown("<h2 style='text-align: center;padding-top: 0rem;'>Creating Visualisations using Natural Language with Code Llama</h2>", unsafe_allow_html=True)
 
-available_models = {"Code Llama":"CodeLlama-34b-Instruct-hf"}
+available_models = {"Code Llama":"codellama/CodeLlama-34b-Instruct-hf", 
+                    #"Zephyr Beta":"HuggingFaceH4/zephyr-7b-beta"
+                    }
+
+hf_key = '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'
 
 # List to hold datasets
 if "datasets" not in st.session_state:
     datasets = {}
     # Preload datasets
-    datasets["History"] = pd.read_csv("history.csv")
-    datasets["Feedbacks"] = pd.read_csv("translated_feedbacks.csv")
+    #datasets["Feedbacks"] = clean_dataset(pd.read_csv("data/translated_feedbacks.csv"), available_models["Code Llama"], hf_key)
+    #datasets["History"] = clean_dataset(pd.read_csv("data/history.csv"), available_models["Code Llama"], hf_key)
+    datasets["Sleep"] = pd.read_csv("data/physionet_cleaned/sleep.csv", parse_dates=['date'])
+    datasets["Screen"] = pd.read_csv("data/physionet_cleaned/screen.csv", parse_dates=['date'])
+    datasets["Steps"] = pd.read_csv("data/physionet_cleaned/steps.csv", parse_dates=['date'])
     st.session_state["datasets"] = datasets 
 else:
     # use the list already loaded
     datasets = st.session_state["datasets"]
-
-#key_col1,key_col2 = st.columns(2)
-#hf_key = key_col1.text_input(label = ":hugging_face: HuggingFace Key:",help="Required for Code Llama", type="password")
-
-hf_key = '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'
 
 with st.sidebar:
     # First we want to choose the dataset, but we will fill it with choices once we've loaded one
@@ -45,6 +40,7 @@ with st.sidebar:
         if uploaded_file:
             # Read in the data, add it to the list of available datasets. Give it a nice name.
             file_name = uploaded_file.name[:-4].capitalize()
+            # Clean the chosen dataset
             datasets[file_name] = pd.read_csv(uploaded_file)
             # We want to default the radio button to the newly added dataset
             index_no = len(datasets)-1
@@ -59,10 +55,11 @@ with st.sidebar:
     # Keep a dictionary of whether models are selected or not
     use_model = {}
     for model_desc,model_name in available_models.items():
+        model_name = model_name.split("/")[-1]
         label = f"{model_desc} ({model_name})"
         key = f"key_{model_desc}"
         use_model[model_desc] = st.checkbox(label,value=True,key=key)
- 
+
  # Text area for query
 question = st.text_area("What would you like to visualise?",height=10)
 go_btn = st.button("Go...")
@@ -73,37 +70,30 @@ model_count = len(selected_models)
 
 # Execute chatbot query
 if go_btn and model_count > 0:
-    api_keys_entered = True
-    # Check API keys are entered.
-    if "Code Llama" in selected_models:
-        if not hf_key.startswith('hf_'):
-            st.error("Please enter a valid HuggingFace API key.")
-            api_keys_entered = False
-    if api_keys_entered:
-        # Place for plots depending on how many models
-        plots = st.columns(model_count)
-        # Get the primer for this dataset
-        primer1,primer2 = get_primer(datasets[chosen_dataset],'datasets["'+ chosen_dataset + '"]') 
-        # Create model, run the request and print the results
-        for plot_num, model_type in enumerate(selected_models):
-            with plots[plot_num]:
-                st.subheader(model_type)
-                try:
-                    # Format the question 
-                    question_to_ask = format_question(primer1, primer2, question, model_type)   
-                    # Run the question
-                    answer=""
-                    answer = run_request(question_to_ask, available_models[model_type], alt_key=hf_key)
-                    # the answer is the completed Python script so add to the beginning of the script to it.
-                    answer = primer2 + answer
-                    print("Model: " + model_type)
-                    print(answer)
-                    #plot_area = st.empty()
-                    #plot_area.pyplot(exec(answer))
-                    exec(answer)           
-                except Exception as e:
-                    print(e)
-                    st.error("Unfortunately the code generated from the model contained errors and was unable to execute.")
+    # Place for plots depending on how many models
+    plots = st.columns(model_count)
+    # Get the primer for this dataset
+    primer1,primer2 = get_primer(datasets[chosen_dataset],'datasets["'+ chosen_dataset + '"]') 
+    # Create model, run the request and print the results
+    for plot_num, model_type in enumerate(selected_models):
+        with plots[plot_num]:
+            st.subheader(model_type)
+            try:
+                # Format the question 
+                question_to_ask = format_question(primer1, primer2, question, model_type)   
+                # Run the question
+                answer=""
+                answer = run_request(question_to_ask, available_models[model_type], alt_key=hf_key)
+                # the answer is the completed Python script so add to the beginning of the script to it.
+                answer = primer2 + answer
+                print("Model: " + model_type)
+                print(answer)
+                #plot_area = st.empty()
+                #plot_area.pyplot(exec(answer))
+                exec(answer)           
+            except Exception as e:
+                print(e)
+                st.error("Unfortunately the code generated from the model contained errors and was unable to execute.")
 
 # Display the datasets in a list of tabs
 # Create the tabs

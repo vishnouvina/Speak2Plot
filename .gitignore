@@ -1,2 +1,3 @@
-/history.csv
-/translated_feedbacks.csv
+/data
+/.venv
+/__pycache__
