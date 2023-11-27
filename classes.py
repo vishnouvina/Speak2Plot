@@ -13,7 +13,7 @@ def run_request(question_to_ask, model_type, alt_key):
 
 def format_response(res):
     # Remove the load_csv from the answer if it exists
-    csv_line = res.find("read_csv")
+    csv_line = res.find('read_csv')
     if csv_line > 0:
         return_before_csv_line = res[0:csv_line].rfind("\n")
         if return_before_csv_line == -1:
@@ -29,13 +29,13 @@ def format_response(res):
         else:
             res_after = res_after[return_after_csv_line:]
         res = res_before + res_after
-    return res
+    return res.replace("plt.show()","")
 
 def format_question(primer_desc,primer_code , question, model_type):
     # Fill in the model_specific_instructions variable
     instructions = ""
-    instructions = "Create a figure object named fig using plotly express. Do not show the fig.\n"
-    instructions += "Pass it to : st.plotly_chart(fig,use_container_width=True)"
+    instructions = "Create a figure object named fig using plotly express. Do not show the figure.\n"
+    instructions += "You have to pass it to : st.plotly_chart(fig,use_container_width=True)."
     primer_desc = primer_desc.format(instructions)  
     # Put the question at the end of the description primer within quotes, then add on the code primer.
     return  '"""\n' + primer_desc + question + '\n"""\n' + primer_code
@@ -57,8 +57,8 @@ def get_primer(df_dataset,df_name):
             primer_desc = primer_desc + "\nThe column '" + i + "' is type " + str(df_dataset.dtypes[i]) + " and contains datetime values. " 
     primer_desc = primer_desc + "\nLabel the x and y axes appropriately."
     primer_desc = primer_desc + "\nAdd a title."
-    primer_desc = primer_desc + "{}" # Space for additional instructions if needed
-    primer_desc = primer_desc + "\nUsing Python version 3.11.5, create a script using the dataframe df to graph the following: "
+    primer_desc = primer_desc + "\nDo not include comments."
+    primer_desc = primer_desc + "\nUsing Python version 3.11.5, create a script using df to graph the following: "
     #pimer_code = "import pandas as pd\nimport seaborn as sns\nimport matplotlib.pyplot as plt\n"
     pimer_code = "import pandas as pd\nimport plotly.express as px\nimport streamlit as st\nimport matplotlib.pyplot as plt\n"
     #pimer_code = pimer_code + "fig,ax = plt.subplots(1,1,figsize=(10,4))\n"

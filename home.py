@@ -71,12 +71,13 @@ model_count = len(selected_models)
 # Execute chatbot query
 if go_btn and model_count > 0:
     # Place for plots depending on how many models
-    plots = st.columns(model_count)
+    #plots = st.tabs(model_count)
     # Get the primer for this dataset
     primer1,primer2 = get_primer(datasets[chosen_dataset],'datasets["'+ chosen_dataset + '"]') 
     # Create model, run the request and print the results
     for plot_num, model_type in enumerate(selected_models):
-        with plots[plot_num]:
+        #with plots[plot_num]:
+        with st.container():
             st.subheader(model_type)
             try:
                 # Format the question 
