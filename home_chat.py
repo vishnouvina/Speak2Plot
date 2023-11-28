@@ -18,7 +18,7 @@ available_models = {"Code Llama":"codellama/CodeLlama-34b-Instruct-hf",
                     #"Zephyr Beta":"HuggingFaceH4/zephyr-7b-beta"
                     }
 
-hf_key = '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'
+hf_key = st.secrets["hf_key"]
 
 if "datasets" not in st.session_state:
     datasets = {}
@@ -74,7 +74,10 @@ if st.session_state.messages[-1]["role"] != "assistant":
             print(answer)
             exec(answer)  
             #st.write(answer)
-            message = {"role": "assistant", "content": fig}
+            if fig:
+                message = {"role": "assistant", "content": fig}
+            else:
+                message = {"role": "assistant", "content": "Sorry, I don't know how to do that yet. Try another question."}
             st.session_state.messages.append(message) 
 
 auto_scroll_to_bottom()
