@@ -66,18 +66,20 @@ primer1, primer2 = get_primer(datasets[chosen_dataset],'datasets["'+ chosen_data
 if st.session_state.messages[-1]["role"] != "assistant":
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
-            question_to_ask = format_question(primer1, primer2, prompt, selected_model)   
-            answer=""
-            answer = run_request(question_to_ask, available_models[selected_model], alt_key=hf_key)
-            answer = primer2 + answer
-            print("Model: " + selected_model)
-            print(answer)
-            exec(answer)  
-            #st.write(answer)
-            if fig:
+            try:
+                question_to_ask = format_question(primer1, primer2, prompt, selected_model)   
+                answer=""
+                answer = run_request(question_to_ask, available_models[selected_model], alt_key=hf_key)
+                answer = primer2 + answer
+                print("Model: " + selected_model)
+                print(answer)
+                exec(answer)
                 message = {"role": "assistant", "content": fig}
-            else:
-                message = {"role": "assistant", "content": "Sorry, I don't know how to do that yet. Try another question."}
+            
+            except Exception as e:
+                print(e)
+                message = {"role": "assistant", "content": "Unfortunately the code generated from the model contained errors and was unable to execute."}
+                st.write(message['content'])
             st.session_state.messages.append(message) 
 
 auto_scroll_to_bottom()

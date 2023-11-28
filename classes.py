@@ -58,9 +58,6 @@ def get_primer(df_dataset,df_name):
     primer_desc = primer_desc + "\nAdd a title."
     primer_desc = primer_desc + "\nDo not include comments."
     primer_desc = primer_desc + "\nUsing Python version 3.11.5, create a script using df to graph the following: "
-    #pimer_code = "import pandas as pd\nimport seaborn as sns\nimport matplotlib.pyplot as plt\n"
     pimer_code = "import pandas as pd\nimport plotly.express as px\nimport streamlit as st\nimport matplotlib.pyplot as plt\n"
-    #pimer_code = pimer_code + "fig,ax = plt.subplots(1,1,figsize=(10,4))\n"
-    #pimer_code = pimer_code + "ax.spines['top'].set_visible(False)\nax.spines['right'].set_visible(False) \n"
     pimer_code = pimer_code + "df=" + df_name + ".copy()\n"
     return primer_desc,pimer_code
