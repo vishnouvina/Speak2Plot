@@ -77,7 +77,7 @@ def get_primer(df_dataset,df_name):
             primer_desc = primer_desc + "\nThe column '" + i + "' is type " + str(df_dataset.dtypes[i]) + " and contains numeric values. " 
         elif df_dataset.dtypes[i]== "datetime64[ns]":
             primer_desc = primer_desc + "\nThe column '" + i + "' is type " + str(df_dataset.dtypes[i]) + " and contains datetime values. " 
-    primer_desc = primer_desc + "\nLabel the x and y axes appropriately."
+    primer_desc = primer_desc + "\nGive a label to the x and y axes appropriately before plotting."
     primer_desc = primer_desc + "\nAdd a title."
     primer_desc = primer_desc + "\nDo not include comments."
     primer_desc = primer_desc + "\nUsing Python version 3.11.5, create a script using df to graph the following: "

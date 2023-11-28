@@ -60,7 +60,6 @@ with st.sidebar:
     ":brain: Choose your model:", available_models.keys(),
     captions = available_models.values())
 
-
 if "messages" not in st.session_state.keys(): 
     st.session_state.messages = [
         {"role": "assistant", "content": "Hello ! How can I help you ?"}
@@ -70,8 +69,13 @@ if prompt := st.chat_input("Your question"):
     st.session_state.messages.append({"role": "user", "content": prompt})
 
 for message in st.session_state.messages: 
-    with st.chat_message(message["role"]):
-        st.write(message["content"])
+    if "figure" in message:
+        with st.chat_message(message["role"]):
+            st.plotly_chart(message["figure"], use_container_width=True)
+            st.write(message["content"])
+    else:
+        with st.chat_message(message["role"]):
+            st.write(message["content"])
 
 primer1, primer2 = get_primer(datasets[chosen_dataset],'datasets["'+ chosen_dataset + '"]') 
 
@@ -93,27 +97,16 @@ if st.session_state.messages[-1]["role"] != "assistant":
                 print(insights)
                 st.write(insights)
 
-                message = {"role": "assistant", "content": fig}
-            
+                message = {"role": "assistant", "figure": fig, "content": insights}
+
             except Exception as e:
                 print(e)
                 message = {"role": "assistant", "content": "Unfortunately the code generated from the model contained errors and was unable to execute."}
                 st.write(message['content'])
-
+            
             st.session_state.messages.append(message) 
 
 auto_scroll_to_bottom()
-
-def tabs_datasets():
-    tab_list = st.tabs(datasets.keys())
-
-    # Load up each tab with a dataset
-    for dataset_num, tab in enumerate(tab_list):
-        with tab:
-            # Can't get the name of the tab! Can't index key list. So convert to list and index
-            dataset_name = list(datasets.keys())[dataset_num]
-            st.subheader(dataset_name)
-            st.dataframe(datasets[dataset_name],hide_index=True)
 
 # Hide menu and footer
 hide_streamlit_style = """
