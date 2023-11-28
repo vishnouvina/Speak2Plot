@@ -1,5 +1,7 @@
 from langchain import HuggingFaceHub, LLMChain,PromptTemplate
-from langchain_experimental.agents.agent_toolkits import create_pandas_dataframe_agent
+import plotly.express as px
+from PIL import Image
+import io
 
 def run_request(question_to_ask, model_type, alt_key):
     # Hugging Face model
@@ -31,7 +33,28 @@ def format_response(res):
         res = res_before + res_after
     return res
 
-def format_question(primer_desc,primer_code , question, model_type):
+def generate_insights(processor, model, fig, model_id, alt_key):
+    query = "You are an helpful and friendly data analyst assistant.\n"
+    query += "You will be given a description of a figure and you will have to generate key insights and trends from it.\n"
+    query += "Answer in a friendly and helpful manner, be joyful and talk with sentences only.\n"
+    query += "Here is the description: "
+
+    img_bytes = fig.to_image(format="png")
+    img = Image.open(io.BytesIO(img_bytes))
+    inputs = processor(images=img, text="Generate informations from the figure below:", return_tensors="pt")
+    
+    predictions = model.generate(**inputs, max_new_tokens=1024)
+    answer = processor.decode(predictions[0], skip_special_tokens=True)
+
+    query += answer
+    query += "\n\n"
+    print(query)
+    insights = run_request(query, model_id, alt_key)
+
+    insights = insights.replace("<|assistant|>","")
+    return insights
+
+def format_question(primer_desc,primer_code , question):
     # Fill in the model_specific_instructions variable
     instructions = "\n"
     instructions = "Create a figure object named fig using plotly express. Do not show the figure.\n"

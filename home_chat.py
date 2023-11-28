@@ -1,8 +1,9 @@
 import streamlit as st
 import pandas as pd
-
-from classes import get_primer, format_question, run_request
+from transformers import Pix2StructProcessor, Pix2StructForConditionalGeneration
+from classes import get_primer, format_question, run_request, generate_insights
 import warnings
+
 warnings.filterwarnings("ignore")
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
@@ -19,6 +20,9 @@ available_models = {"Code Llama":"codellama/CodeLlama-34b-Instruct-hf",
                     }
 
 hf_key = st.secrets["hf_key"]
+
+processor = Pix2StructProcessor.from_pretrained('google/deplot')
+model = Pix2StructForConditionalGeneration.from_pretrained('google/deplot')
 
 if "datasets" not in st.session_state:
     datasets = {}
@@ -51,7 +55,7 @@ with st.sidebar:
 
 if "messages" not in st.session_state.keys(): 
     st.session_state.messages = [
-        {"role": "assistant", "content": "What do you want to see ?"}
+        {"role": "assistant", "content": "Hello ! How can I help you ?"}
     ]
 
 if prompt := st.chat_input("Your question"): 
@@ -67,19 +71,27 @@ if st.session_state.messages[-1]["role"] != "assistant":
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
             try:
-                question_to_ask = format_question(primer1, primer2, prompt, selected_model)   
+                fig = None
+                question_to_ask = format_question(primer1, primer2, prompt)   
                 answer=""
                 answer = run_request(question_to_ask, available_models[selected_model], alt_key=hf_key)
                 answer = primer2 + answer
                 print("Model: " + selected_model)
+
                 print(answer)
                 exec(answer)
+
+                insights = generate_insights(processor, model, fig, "HuggingFaceH4/zephyr-7b-beta", hf_key)
+                print(insights)
+                st.write(insights)
+
                 message = {"role": "assistant", "content": fig}
             
             except Exception as e:
                 print(e)
                 message = {"role": "assistant", "content": "Unfortunately the code generated from the model contained errors and was unable to execute."}
                 st.write(message['content'])
+
             st.session_state.messages.append(message) 
 
 auto_scroll_to_bottom()
