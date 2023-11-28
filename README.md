@@ -1,7 +1,7 @@
-# README: Data Visualization Chatbot
+Creating Data Visualisations using Large Language Models
 
 ## Overview
-This Streamlit-powered application is a sophisticated chatbot designed to create data visualizations using natural language processing. Powered by the "Code Llama" and "Zephyr Beta" large language models, it provides an intuitive interface for generating and analyzing visual data representations.
+This Streamlit-powered application is a chatbot designed to create data visualizations using natural language processing. Powered by the "Code Llama" and "Zephyr Beta" large language models, it provides an intuitive interface for generating and analyzing visual data representations.
 
 ## Features
 - **Natural Language Queries**: Users can input questions in natural language to generate visualizations.
@@ -15,7 +15,7 @@ This Streamlit-powered application is a sophisticated chatbot designed to create
 Before running the application, ensure you have the required dependencies:
 
 ```bash
-pip install streamlit pandas transformers plotly
+pip install -r requirements
 ```
 
 ## Running the Application

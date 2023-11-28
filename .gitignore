@@ -2,5 +2,4 @@
 /.venv
 /__pycache__
 /.streamlit
-physionet_cleaning.ipynb
-sandbox.ipynb
+/notebooks
