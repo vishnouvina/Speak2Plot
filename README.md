@@ -44,44 +44,30 @@ To add more datasets or change the models, modify the `datasets` dictionary and 
 
 The app uses `st.secrets` for securely handling API keys. Ensure you have set up your `secrets.toml` file in your Streamlit environment.
 
-## Acknowledgments
+## References
 
 Inspired by RAGS by Llama-Index and Chat2Vis by Paula Maddigan.
-Bibliography:
 
-@misc{Chat2Vis,
-      title={Chat2VIS: Generating Data Visualizations via Natural Language Using ChatGPT, Codex and GPT-3 Large Language Models},
-      author={P. Maddigan and T. Susnjak},
-      year={2023},
-      eprint={2303.14292},
-      archivePrefix={arXiv},
-      primaryClass={cs.HC}
-}
+- **Chat2VIS: Generating Data Visualizations via Natural Language Using ChatGPT, Codex and GPT-3 Large Language Models**
+  - *Authors*: P. Maddigan, T. Susnjak
+  - *Year*: 2023
+  - *arXiv*: [2303.14292](https://arxiv.org/abs/2303.14292)
+  - *Primary Class*: cs.HC
 
+- **Code Llama: Open Foundation Models for Code**
+  - *Authors*: Baptiste Rozière, Jonas Gehring, Fabian Gloeckle, Sten Sootla, Itai Gat, Xiaoqing Ellen Tan, Yossi Adi, Jingyu Liu, Tal Remez, Jérémy Rapin, Artyom Kozhevnikov, Ivan Evtimov, Joanna Bitton, Manish Bhatt, Cristian Canton Ferrer, Aaron Grattafiori, Wenhan Xiong, Alexandre Défossez, Jade Copet, Faisal Azhar, Hugo Touvron, Louis Martin, Nicolas Usunier, Thomas Scialom, Gabriel Synnaeve
+  - *Year*: 2023
+  - *arXiv*: [2308.12950](https://arxiv.org/abs/2308.12950)
+  - *Primary Class*: cs.CL
 
-@misc{CodeLlama-34b-Instruct-hf,
-      title={Code Llama: Open Foundation Models for Code},
-      author={Baptiste Rozière, Jonas Gehring, Fabian Gloeckle, Sten Sootla, Itai Gat, Xiaoqing Ellen Tan, Yossi Adi, Jingyu Liu, Tal Remez, Jérémy Rapin, Artyom Kozhevnikov, Ivan Evtimov, Joanna Bitton, Manish Bhatt, Cristian Canton Ferrer, Aaron Grattafiori, Wenhan Xiong, Alexandre Défossez, Jade Copet, Faisal Azhar, Hugo Touvron, Louis Martin, Nicolas Usunier, Thomas Scialom, Gabriel Synnaeve},
-      year={2023},
-      eprint={2308.12950},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL}
-}
+- **DePlot: One-shot visual language reasoning by plot-to-table translation**
+  - *Authors*: Fangyu Liu, Julian Martin Eisenschlos, Francesco Piccinno, Syrine Krichene, Chenxi Pang, Kenton Lee, Mandar Joshi, Wenhu Chen, Nigel Collier, Yasemin Altun
+  - *Year*: 2022
+  - *arXiv*: [2212.10505](https://arxiv.org/abs/2212.10505)
+  - *Primary Class*: cs.CL
 
-@misc{liu2022deplot,
-      title={DePlot: One-shot visual language reasoning by plot-to-table translation},
-      author={Liu, Fangyu and Eisenschlos, Julian Martin and Piccinno, Francesco and Krichene, Syrine and Pang, Chenxi and Lee, Kenton and Joshi, Mandar and Chen, Wenhu and Collier, Nigel and Altun, Yasemin},
-      year={2022},
-      eprint={2212.10505},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL}
-}
-
-@misc{tunstall2023zephyr,
-      title={Zephyr: Direct Distillation of LM Alignment}, 
-      author={Lewis Tunstall and Edward Beeching and Nathan Lambert and Nazneen Rajani and Kashif Rasul and Younes Belkada and Shengyi Huang and Leandro von Werra and Clémentine Fourrier and Nathan Habib and Nathan Sarrazin and Omar Sanseviero and Alexander M. Rush and Thomas Wolf},
-      year={2023},
-      eprint={2310.16944},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG}
-}
+- **Zephyr: Direct Distillation of LM Alignment**
+  - *Authors*: Lewis Tunstall, Edward Beeching, Nathan Lambert, Nazneen Rajani, Kashif Rasul, Younes Belkada, Shengyi Huang, Leandro von Werra, Clémentine Fourrier, Nathan Habib, Nathan Sarrazin, Omar Sanseviero, Alexander M. Rush, Thomas Wolf
+  - *Year*: 2023
+  - *arXiv*: [2310.16944](https://arxiv.org/abs/2310.16944)
+  - *Primary Class*: cs.LG
