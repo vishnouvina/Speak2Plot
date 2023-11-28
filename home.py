@@ -10,7 +10,7 @@ st.set_page_config(layout="wide",page_title="Chat2VIS")
 st.markdown("<h2 style='text-align: center;padding-top: 0rem;'>Creating Visualisations using Natural Language with Code Llama</h2>", unsafe_allow_html=True)
 
 available_models = {"Code Llama":"codellama/CodeLlama-34b-Instruct-hf", 
-                    #"Zephyr Beta":"HuggingFaceH4/zephyr-7b-beta"
+                    "Zephyr Beta":"HuggingFaceH4/zephyr-7b-beta"
                     }
 
 hf_key = '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'
@@ -50,22 +50,16 @@ with st.sidebar:
     # Radio buttons for dataset choice
     chosen_dataset = dataset_container.radio(":bar_chart: Choose your data:",datasets.keys(),index=index_no)#,horizontal=True,)
 
-    # Check boxes for model choice
-    st.write(":brain: Choose your model(s):")
-    # Keep a dictionary of whether models are selected or not
-    use_model = {}
-    for model_desc,model_name in available_models.items():
-        model_name = model_name.split("/")[-1]
-        label = f"{model_desc} ({model_name})"
-        key = f"key_{model_desc}"
-        use_model[model_desc] = st.checkbox(label,value=True,key=key)
+    selected_model = st.radio(
+    ":brain: Choose your model:", available_models.keys(),
+    captions = available_models.values())
 
  # Text area for query
 question = st.text_area("What would you like to visualise?",height=10)
 go_btn = st.button("Go...")
 
 # Make a list of the models which have been selected
-selected_models = [model_name for model_name, choose_model in use_model.items() if choose_model]
+selected_models = [selected_model]
 model_count = len(selected_models)
 
 # Execute chatbot query

@@ -29,16 +29,15 @@ def format_response(res):
         else:
             res_after = res_after[return_after_csv_line:]
         res = res_before + res_after
-    return res.replace("plt.show()","")
+    return res
 
 def format_question(primer_desc,primer_code , question, model_type):
     # Fill in the model_specific_instructions variable
-    instructions = ""
+    instructions = "\n"
     instructions = "Create a figure object named fig using plotly express. Do not show the figure.\n"
-    instructions += "You have to pass it to : st.plotly_chart(fig,use_container_width=True)."
-    primer_desc = primer_desc.format(instructions)  
+    instructions += "You have to pass it to : st.plotly_chart(fig,use_container_width=True).\n"
     # Put the question at the end of the description primer within quotes, then add on the code primer.
-    return  '"""\n' + primer_desc + question + '\n"""\n' + primer_code
+    return  '"""\n' + primer_desc + question + instructions + '\n"""\n' + primer_code
 
 def get_primer(df_dataset,df_name):
     # Primer function to take a dataframe and its name
