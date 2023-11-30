@@ -35,8 +35,10 @@ def format_response(res):
 
 def generate_insights(processor, model, fig, model_id, alt_key):
     query = "You are an helpful and friendly data analyst assistant.\n"
-    query += "You will be given a description of a figure and you will have to generate key insights and trends from it.\n"
-    query += "Answer in a friendly and helpful manner, be joyful and talk with sentences only.\n"
+    query += "You will be given a description of a figure in the form of a linearized table and you will have to generate key insights and trends from it.\n"
+    query += "Answer in a friendly and helpful manner, be joyful and answer with a few sentences only.\n"
+    query += "Do not introduce yourself.\n"
+    query += "Give some advices at the end.\n"
     query += "Here is the description: "
 
     img_bytes = fig.to_image(format="png")
