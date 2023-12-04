@@ -1,8 +1,9 @@
 import streamlit as st
 import pandas as pd
-from transformers import Pix2StructProcessor, Pix2StructForConditionalGeneration
-from helper_functions import get_primer, format_question, run_request, generate_insights, auto_scroll_to_bottom
+from helper_functions import load_vector_store, auto_scroll_to_bottom
 import warnings
+from langchain.chains import RetrievalQA
+from langchain import HuggingFaceHub,PromptTemplate
 
 st.set_page_config(
     page_title="Build a data visualisation bot, powered by Code-Llama and Zephyr-Beta",
@@ -21,13 +22,8 @@ available_models = {"Code Llama":"codellama/CodeLlama-34b-Instruct-hf",
                     "Zephyr Beta":"HuggingFaceH4/zephyr-7b-beta"
                     }
 
-plot_model = "Code Llama"
-answer_model = "Zephyr Beta"
-
+rag_model = "Zephyr Beta"    
 hf_key = st.secrets["hf_key"]
-
-processor = Pix2StructProcessor.from_pretrained('google/deplot')
-model = Pix2StructForConditionalGeneration.from_pretrained('google/deplot')
 
 if "datasets" not in st.session_state:
     datasets = {}
@@ -53,7 +49,10 @@ with st.sidebar:
         print("File failed to load.\n" + str(e))
     chosen_dataset = dataset_container.radio(":bar_chart: Choose your data:",datasets.keys(),index=index_no)
 
-    #selected_model = st.radio(":brain: Choose your model:", available_models.keys(), captions = available_models.values())
+    selected_model = st.radio(
+    ":brain: Choose your model:", available_models.keys(),
+    captions = available_models.values())
+
 
 if "messages" not in st.session_state.keys(): 
     st.session_state.messages = [
@@ -72,34 +71,37 @@ for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.write(message["content"])
 
-primer1, primer2 = get_primer(datasets[chosen_dataset],'datasets["'+ chosen_dataset + '"]') 
+vectordb = load_vector_store()
+
+template = """
+Use the following pieces of context to answer the question at the end. 
+If you don't know the answer, just say that you don't know, don't try 
+to make up an answer. 
+Keep the answer as concise as possible. Use 1 sentence to sum all points up.
+______________
+{context}
+Question: {question}
+Helpful Answer:"""
+
+QA_CHAIN_PROMPT = PromptTemplate.from_template(template)
+
+llm = HuggingFaceHub(huggingfacehub_api_token = hf_key, repo_id= available_models[rag_model], model_kwargs={"temperature":0.01, "max_new_tokens":500})
+
+qa_chain = RetrievalQA.from_chain_type(
+    llm,
+    retriever=vectordb.as_retriever(),
+    return_source_documents=True,
+    chain_type_kwargs={"prompt": QA_CHAIN_PROMPT}
+)
 
 if st.session_state.messages[-1]["role"] != "assistant":
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
-            try:
-                fig = None
-                question_to_ask = format_question(primer1, primer2, prompt)   
-                answer=""
-                answer = run_request(question_to_ask, available_models[plot_model], alt_key=hf_key)
-                answer = primer2 + answer
-                print("Model: " + plot_model)
-
-                print(answer)
-                exec(answer)
-
-                insights = generate_insights(processor, model, fig, available_models[answer_model], hf_key)
-                print(insights)
-                st.write(insights)
-
-                message = {"role": "assistant", "figure": fig, "content": insights}
-
-            except Exception as e:
-                print(e)
-                message = {"role": "assistant", "content": "Unfortunately the code generated from the model contained errors and was unable to execute."}
-                st.write(message['content'])
             
-            st.session_state.messages.append(message) 
+            result = qa_chain({"query": prompt})
+            st.write(result['result'])
+            
+            st.session_state.messages.append(result['result']) 
 
 auto_scroll_to_bottom()
 

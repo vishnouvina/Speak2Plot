@@ -1,7 +1,17 @@
+import streamlit as st
 from langchain import HuggingFaceHub, LLMChain,PromptTemplate
 import plotly.express as px
 from PIL import Image
 import io
+from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.vectorstores import Chroma
+
+
+def auto_scroll_to_bottom():
+    st.markdown(
+        '<script>window.scrollTo(0,document.body.scrollHeight);</script>', 
+        unsafe_allow_html=True
+    )
 
 def run_request(question_to_ask, model_type, alt_key):
     # Hugging Face model
@@ -86,3 +96,21 @@ def get_primer(df_dataset,df_name):
     pimer_code = "import pandas as pd\nimport plotly.express as px\nimport streamlit as st\nimport matplotlib.pyplot as plt\n"
     pimer_code = pimer_code + "df=" + df_name + ".copy()\n"
     return primer_desc,pimer_code
+
+def load_vector_store(persist_directory =  '/Users/vishnouvina/Desktop/UofT/UbiComp/csc2524/notebooks/vector_store'):
+    sentence_model_name = "sentence-transformers/all-mpnet-base-v2"
+    model_kwargs = {'device': 'cpu'}
+    encode_kwargs = {'normalize_embeddings': False}
+
+    embedding = HuggingFaceEmbeddings(
+        model_name=sentence_model_name,
+        model_kwargs=model_kwargs,
+        encode_kwargs=encode_kwargs
+    )
+
+
+    vectordb = Chroma(
+        embedding_function=embedding,
+        persist_directory=persist_directory)
+    
+    return vectordb
