@@ -24,8 +24,11 @@ def auto_scroll_to_bottom():
 st.header("Creating Visualisations using Natural Language with Code Llama 💬")
 
 available_models = {"Code Llama":"codellama/CodeLlama-34b-Instruct-hf", 
-                    #"Zephyr Beta":"HuggingFaceH4/zephyr-7b-beta"
+                    "Zephyr Beta":"HuggingFaceH4/zephyr-7b-beta"
                     }
+
+plot_model = "Code Llama"
+answer_model = "Zephyr Beta"
 
 hf_key = st.secrets["hf_key"]
 
@@ -56,9 +59,7 @@ with st.sidebar:
         print("File failed to load.\n" + str(e))
     chosen_dataset = dataset_container.radio(":bar_chart: Choose your data:",datasets.keys(),index=index_no)
 
-    selected_model = st.radio(
-    ":brain: Choose your model:", available_models.keys(),
-    captions = available_models.values())
+    #selected_model = st.radio(":brain: Choose your model:", available_models.keys(), captions = available_models.values())
 
 if "messages" not in st.session_state.keys(): 
     st.session_state.messages = [
@@ -86,14 +87,14 @@ if st.session_state.messages[-1]["role"] != "assistant":
                 fig = None
                 question_to_ask = format_question(primer1, primer2, prompt)   
                 answer=""
-                answer = run_request(question_to_ask, available_models[selected_model], alt_key=hf_key)
+                answer = run_request(question_to_ask, available_models[plot_model], alt_key=hf_key)
                 answer = primer2 + answer
-                print("Model: " + selected_model)
+                print("Model: " + plot_model)
 
                 print(answer)
                 exec(answer)
 
-                insights = generate_insights(processor, model, fig, "HuggingFaceH4/zephyr-7b-beta", hf_key)
+                insights = generate_insights(processor, model, fig, available_models[answer_model], hf_key)
                 print(insights)
                 st.write(insights)
 
