@@ -48,7 +48,7 @@ def generate_insights(processor, model, fig, model_id, alt_key):
     query += "You will be given a description of a figure in the form of a linearized table and you will have to generate key insights and trends from it.\n"
     query += "Answer in a friendly and helpful manner, be joyful and answer with a few sentences only.\n"
     query += "Do not introduce yourself.\n"
-    query += "Give some advices at the end.\n"
+    query += "Give some advices regarding the sleep schedule and health advices.\n"
     query += "Here is the description: "
 
     img_bytes = fig.to_image(format="png")
@@ -114,3 +114,28 @@ def load_vector_store(persist_directory =  '/Users/vishnouvina/Desktop/UofT/UbiC
         persist_directory=persist_directory)
     
     return vectordb
+
+
+def generate_rag(rag_answer, question_to_ask, model_id, alt_key):
+
+    template = """
+    You are an helpful chatbot
+    Use the following dictionary containing a set of data entries, each with specific details and context. 
+    The dictionary also includes a 'query' and a 'result' related to this data. 
+    Based on the above information, please provide a detailed conclusion that incorporates insights from the query, the result, and the source documents. 
+    Consider all relevant aspects such as the specifics of each document, the overarching themes, and any patterns or trends that emerge from the data.
+    Keep the answer as concise as possible.
+    ______________
+    {dictionary}
+    Question: {question}
+    Helpful Answer:"""
+
+    llm = HuggingFaceHub(huggingfacehub_api_token = alt_key, repo_id= model_id, model_kwargs={"temperature":0.1, "max_new_tokens":500})
+
+    llm_prompt = PromptTemplate.from_template(template)
+
+    llm_chain = LLMChain(llm=llm,prompt=llm_prompt)
+
+    llm_response = llm_chain.predict(dictionary = str(rag_answer), question = question_to_ask)
+
+    return llm_response

@@ -43,10 +43,6 @@ with st.sidebar:
         print("File failed to load.\n" + str(e))
     chosen_dataset = dataset_container.radio(":bar_chart: Choose your data:",datasets.keys(),index=index_no)
 
-    selected_model = st.radio(
-    ":brain: Choose your model:", available_models.keys(),
-    captions = available_models.values())
-
 tab_list = st.tabs(datasets.keys())
 
 for dataset_num, tab in enumerate(tab_list):

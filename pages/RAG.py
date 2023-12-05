@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from helper_functions import load_vector_store, auto_scroll_to_bottom
+from helper_functions import generate_rag, load_vector_store, auto_scroll_to_bottom
 import warnings
 from langchain.chains import RetrievalQA
 from langchain import HuggingFaceHub,PromptTemplate
@@ -49,14 +49,9 @@ with st.sidebar:
         print("File failed to load.\n" + str(e))
     chosen_dataset = dataset_container.radio(":bar_chart: Choose your data:",datasets.keys(),index=index_no)
 
-    selected_model = st.radio(
-    ":brain: Choose your model:", available_models.keys(),
-    captions = available_models.values())
-
-
 if "messages" not in st.session_state.keys(): 
     st.session_state.messages = [
-        {"role": "assistant", "content": "Hello ! How can I help you ?"}
+        {"role": "assistant", "content": "Hello ! How can I help you ?"},
     ]
 
 if prompt := st.chat_input("Your question"): 
@@ -97,11 +92,13 @@ qa_chain = RetrievalQA.from_chain_type(
 if st.session_state.messages[-1]["role"] != "assistant":
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
-            
-            result = qa_chain({"query": prompt})
-            st.write(result['result'])
-            
-            st.session_state.messages.append(result['result']) 
+            rag_answer = qa_chain({"query": prompt})
+
+            print(rag_answer)
+            answer = generate_rag(rag_answer, prompt, available_models[rag_model], alt_key=hf_key)
+            st.write(answer)
+
+            st.session_state.messages.append(answer)
 
 auto_scroll_to_bottom()
 
