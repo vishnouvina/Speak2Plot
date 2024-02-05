@@ -31,9 +31,7 @@ model = Pix2StructForConditionalGeneration.from_pretrained('google/deplot')
 
 if "datasets" not in st.session_state:
     datasets = {}
-    datasets["Sleep"] = pd.read_csv("data/physionet_cleaned/sleep.csv", parse_dates=['date'])
-    datasets["Screen"] = pd.read_csv("data/physionet_cleaned/screen.csv", parse_dates=['date'])
-    datasets["Steps"] = pd.read_csv("data/physionet_cleaned/steps.csv", parse_dates=['date'])
+    #add local datasets here
     st.session_state["datasets"] = datasets 
 else:
     datasets = st.session_state["datasets"]
